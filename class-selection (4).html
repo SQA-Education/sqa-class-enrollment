@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQA Education — Class Selection</title>
+<style>
+:root{--navy:#1a1a4e;--navy-light:#2d2d6b;--gold:#d4a844;--gold-dark:#c49530;--green:#27ae60;--red:#e74c3c;--text:#333;--text-light:#666;--text-muted:#999;--bg:#f4f1ec;--card-bg:#fff;--radius:12px;--shadow:0 4px 20px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--text);min-height:100vh}
+.container{max-width:680px;margin:0 auto;padding:16px}
+.logo-section{text-align:center;padding:24px 0 16px}
+.logo-text{font-size:26px;font-weight:700;color:var(--navy);letter-spacing:.5px}
+.logo-sub{font-size:11px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase}
+.card{background:var(--card-bg);border-radius:var(--radius);padding:28px 24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.tz-banner{display:flex;align-items:center;gap:10px;background:#eef6ff;border:1px solid #c8dff5;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#1a5276}
+.tz-banner .globe{font-size:20px;flex-shrink:0}
+.tz-banner strong{color:var(--navy)}
+.tz-banner .tz-change{font-size:11px;color:#2980b9;cursor:pointer;text-decoration:underline;margin-left:auto;flex-shrink:0}
+.level-banner{text-align:center;padding:30px 24px;background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:var(--radius);margin-bottom:16px;color:#fff}
+.level-banner .label{font-size:13px;color:rgba(255,255,255,.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.level-circle{width:80px;height:80px;border:3px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.level-circle span{font-size:28px;font-weight:700;color:var(--gold)}
+.level-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.level-desc{font-size:13px;color:rgba(255,255,255,.7)}
+.classes-title{font-size:18px;color:var(--navy);margin-bottom:4px;border-left:4px solid var(--gold);padding-left:12px}
+.classes-subtitle{font-size:13px;color:var(--text-light);margin-bottom:16px;padding-left:16px}
+.class-card{border:2px solid #eee;border-radius:10px;padding:18px;margin-bottom:12px;cursor:pointer;transition:all .2s;position:relative}
+.class-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.class-card.selected{border-color:var(--navy);background:#f0edf8}
+.class-card.full{opacity:.5;cursor:not-allowed;pointer-events:none}
+.class-card .days{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.class-card .time-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.time-ny{font-size:13px;color:var(--text-light);background:#f4f1ec;padding:3px 10px;border-radius:4px}
+.time-local{font-size:14px;font-weight:700;color:var(--navy);background:#eef6ff;padding:4px 12px;border-radius:4px;border:1px solid #c8dff5}
+.time-same{font-size:14px;color:var(--text)}
+.day-diff{font-size:11px;color:#e65100;font-weight:700;background:#fff3e0;padding:2px 8px;border-radius:4px;margin-left:4px}
+.class-card .teacher{font-size:13px;color:var(--text-light);margin-bottom:2px}
+.class-card .course-name{font-size:12px;color:var(--text-muted)}
+.class-card .seats{position:absolute;top:16px;right:16px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px}
+.seats-available{background:#e8f5e9;color:var(--green)}
+.seats-low{background:#fff3e0;color:#e65100}
+.seats-full{background:#fce4ec;color:var(--red)}
+.check-mark{display:none;position:absolute;top:16px;left:16px;width:24px;height:24px;background:var(--navy);border-radius:50%;color:#fff;font-size:14px;align-items:center;justify-content:center}
+.class-card.selected .check-mark{display:flex}
+.commit-section{display:none}
+.commit-section.visible{display:block}
+.commit-box{background:#fef9ef;border:2px solid var(--gold);border-radius:var(--radius);padding:20px}
+.commit-box h3{font-size:16px;color:var(--navy);margin-bottom:12px}
+.commit-items{list-style:none;padding:0}
+.commit-items li{font-size:13px;color:var(--text);padding:6px 0;padding-left:24px;position:relative;line-height:1.5}
+.commit-items li::before{content:'✓';position:absolute;left:0;color:var(--gold);font-weight:700}
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-top:16px;padding:14px;background:#fff;border-radius:8px;border:1px solid #eee}
+.checkbox-row input[type="checkbox"]{margin-top:3px;width:18px;height:18px;accent-color:var(--navy);flex-shrink:0;cursor:pointer}
+.checkbox-row label{font-size:13px;color:var(--text);line-height:1.5;cursor:pointer}
+.name-input{width:100%;padding:12px 16px;border:2px solid #ddd;border-radius:8px;font-size:15px;font-family:Georgia,serif;margin-top:12px;transition:border-color .2s}
+.name-input:focus{outline:none;border-color:var(--navy)}
+.name-hint{font-size:12px;color:var(--text-muted);margin-top:6px}
+.submit-btn{display:block;width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#fff;font-size:16px;font-weight:700;border:none;border-radius:50px;cursor:pointer;font-family:Georgia,serif;letter-spacing:.5px;margin-top:16px;transition:all .2s;opacity:.4;pointer-events:none}
+.submit-btn.active{opacity:1;pointer-events:all}
+.submit-btn.active:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,168,68,.4)}
+.full-message{text-align:center;padding:30px 20px}
+.full-message h2{font-size:20px;color:var(--navy);margin-bottom:10px}
+.full-message p{font-size:14px;color:var(--text-light);line-height:1.6;margin-bottom:20px}
+.option-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.option-card{border:2px solid #eee;border-radius:10px;padding:20px 16px;text-align:center;transition:all .2s;text-decoration:none;color:inherit}
+.option-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.option-card.premium{border-color:var(--gold);background:linear-gradient(135deg,#fef9ef,#fdf3e0)}
+.option-card .icon{font-size:28px;margin-bottom:8px}
+.option-card h4{font-size:14px;color:var(--navy);margin-bottom:4px}
+.option-card p{font-size:12px;color:var(--text-light);margin:0}
+.option-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:3px 10px;border-radius:50px;margin-bottom:8px}
+.tag-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#fff}
+.tag-free{background:#eee;color:var(--text-muted)}
+.success-section{display:none;text-align:center}
+.success-section.visible{display:block}
+.tz-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+.tz-modal-overlay.visible{display:flex}
+.tz-modal{background:#fff;border-radius:var(--radius);padding:24px;max-width:420px;width:90%;max-height:80vh;overflow-y:auto}
+.tz-modal h3{font-size:16px;color:var(--navy);margin-bottom:12px}
+.tz-search{width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:12px;font-family:Georgia,serif}
+.tz-search:focus{outline:none;border-color:var(--navy)}
+.tz-list{max-height:300px;overflow-y:auto}
+.tz-option{padding:10px 12px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text);transition:background .15s}
+.tz-option:hover{background:#f0edf8}
+.tz-option .tz-offset{color:var(--text-muted);font-size:11px}
+.local-days-note{font-size:11px;color:var(--text-muted);margin-top:2px}
+.local-days-note strong{color:#e65100}
+.footer{text-align:center;padding:16px;font-size:12px;color:var(--text-muted)}
+@media(max-width:500px){.container{padding:10px}.card{padding:20px 16px}.option-cards{grid-template-columns:1fr}.time-row{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo-section">
+    <div class="logo-text">SQA Education</div>
+    <div class="logo-sub">Foundation</div>
+  </div>
+  <div class="tz-banner" id="tz-banner">
+    <span class="globe">🌍</span>
+    <span>Times shown in <strong id="tz-display">your local time</strong></span>
+    <span class="tz-change" onclick="openTzPicker()">Change</span>
+  </div>
+  <div class="level-banner" id="level-banner">
+    <div class="label">Your English Level</div>
+    <div class="level-circle"><span id="level-cefr">A1</span></div>
+    <div class="level-name" id="level-name">A1 — Beginner</div>
+    <div class="level-desc" id="level-desc">Practical Skills 1</div>
+  </div>
+  <div class="card" id="class-selection">
+    <h2 class="classes-title" id="classes-title">Available Classes for A1</h2>
+    <p class="classes-subtitle">Select the class that fits your schedule. All classes meet twice per week, 90 minutes each.</p>
+    <div id="class-list"></div>
+  </div>
+  <div class="card full-message" id="full-section" style="display:none">
+    <h2>Classes for <span id="full-level">A1</span> Are Currently Full</h2>
+    <p>All free class spots for your level have been filled. But you have two options:</p>
+    <div class="option-cards">
+      <a href="#" class="option-card premium" id="premium-link">
+        <div class="option-tag tag-gold">Start Now</div>
+        <div class="icon">⭐</div>
+        <h4>Join Premium</h4>
+        <p>Start learning immediately with priority placement and smaller groups.</p>
+      </a>
+      <a href="#" class="option-card" onclick="stayOnWaitlist();return false;">
+        <div class="option-tag tag-free">Free</div>
+        <div class="icon">⏳</div>
+        <h4>Continue Waiting</h4>
+        <p>Stay on the waitlist for the next term. We'll email you when spots open.</p>
+      </a>
+    </div>
+  </div>
+  <div class="commit-section" id="commit-section">
+    <div class="card">
+      <div class="commit-box">
+        <h3>📋 Attendance Commitment</h3>
+        <ul class="commit-items">
+          <li>I will attend my classes regularly (twice a week)</li>
+          <li>I will notify my teacher if I cannot attend a class</li>
+          <li>I understand that missing 3+ classes without notice means my spot may be given to another student</li>
+          <li>I will complete homework and participate actively</li>
+        </ul>
+        <div class="checkbox-row">
+          <input type="checkbox" id="agree-check" onchange="checkReady()">
+          <label for="agree-check"><strong>I agree to the above commitments</strong> and understand that my spot depends on my regular attendance.</label>
+        </div>
+        <input type="text" class="name-input" id="full-name" placeholder="Type your full name to confirm" oninput="checkReady()">
+        <div class="name-hint">This serves as your digital signature</div>
+      </div>
+      <button class="submit-btn" id="submit-btn" onclick="submitEnrollment()">Confirm My Enrollment →</button>
+    </div>
+  </div>
+  <div class="success-section" id="success-section">
+    <div class="card" style="text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">🎉</div>
+      <h2 style="color:var(--green);font-size:22px;margin-bottom:8px">You're Enrolled!</h2>
+      <p style="font-size:14px;color:var(--text-light);line-height:1.6" id="success-details"></p>
+      <div style="background:#f8f6f1;border-radius:8px;padding:16px;margin:16px 0;text-align:left">
+        <p style="font-size:13px;color:var(--text);line-height:1.6"><strong>What happens next:</strong></p>
+        <p style="font-size:13px;color:var(--text-light);line-height:1.6;margin-top:8px">1. Confirmation email with your class details<br>2. Teacher adds you to Google Classroom before March 23<br>3. You receive the Zoom link for your first class<br>4. Classes begin <strong>March 23, 2026</strong></p>
+      </div>
+    </div>
+  </div>
+  <div id="waitlist-confirmed" style="display:none">
+    <div class="card" style="text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">✅</div>
+      <h2 style="color:var(--navy);font-size:20px;margin-bottom:8px">You're on the Waitlist</h2>
+      <p style="font-size:14px;color:var(--text-light);line-height:1.6">You'll stay on the waitlist for the next term. We'll email you as soon as spots open for your level.</p>
+    </div>
+  </div>
+  <div class="footer">© 2026 SQA Education Foundation · Real English for Real Life</div>
+</div>
+<div class="tz-modal-overlay" id="tz-modal">
+  <div class="tz-modal">
+    <h3>🌍 Select Your Timezone</h3>
+    <input type="text" class="tz-search" id="tz-search" placeholder="Search city or timezone..." oninput="filterTimezones()">
+    <div class="tz-list" id="tz-list"></div>
+  </div>
+</div>
+<script>
+(function(){
+'use strict';
+var JOTFORM_LINKS = {
+  'A1': 'https://form.jotform.com/260686050942156',
+  'A2': 'https://form.jotform.com/260686226489167',
+  'B1': 'https://form.jotform.com/260685967795178',
+  'B2': 'https://form.jotform.com/260686738007161',
+  'C1': 'https://form.jotform.com/260686775346168',
+  'Conv': 'https://form.jotform.com/260686453422156'
+};
+var PREMIUM_LINK = 'https://form.jotform.com/PREMIUM_FORM';
+var NY_TZ = 'America/New_York';
+var CLASSES = {
+  'A1': [
+    {id:3087,days:'Monday / Wednesday',dayNums:[1,3],startH:11,startM:0,endH:12,endM:30,teacher:'Eunice Salazar',course:'Practical Skills 1 (A1)',seats:15},
+    {id:3097,days:'Tuesday / Thursday',dayNums:[2,4],startH:18,startM:30,endH:20,endM:0,teacher:'Eunice Salazar',course:'Practical Skills 1 (A1)',seats:15}
+  ],
+  'A2': [
+    {id:3086,days:'Monday / Wednesday',dayNums:[1,3],startH:9,startM:0,endH:10,endM:30,teacher:'Eunice Salazar',course:'PS2 (A2)',seats:15},
+    {id:3099,days:'Tuesday / Thursday',dayNums:[2,4],startH:20,startM:30,endH:22,endM:0,teacher:'Eunice Salazar',course:'PS2 (A2)',seats:15}
+  ],
+  'B1': [
+    {id:3088,days:'Monday / Wednesday',dayNums:[1,3],startH:9,startM:0,endH:10,endM:30,teacher:'Laura Ebel',course:'PS3 (B1)',seats:15},
+    {id:3090,days:'Monday / Wednesday',dayNums:[1,3],startH:18,startM:30,endH:20,endM:0,teacher:'Laura Ebel',course:'PS3 (B1)',seats:15},
+    {id:3095,days:'Tuesday / Thursday',dayNums:[2,4],startH:11,startM:0,endH:12,endM:30,teacher:'Laura Ebel',course:'PS3 (B1)',seats:15},
+    {id:3098,days:'Tuesday / Thursday',dayNums:[2,4],startH:18,startM:30,endH:20,endM:0,teacher:'Jonelle Williams',course:'PS3 (B1)',seats:15},
+    {id:3101,days:'Tuesday / Thursday',dayNums:[2,4],startH:20,startM:30,endH:22,endM:0,teacher:'Jonelle Williams',course:'PS3 (B1)',seats:15}
+  ],
+  'B2': [
+    {id:3089,days:'Monday / Wednesday',dayNums:[1,3],startH:18,startM:30,endH:20,endM:0,teacher:'Jonelle Williams',course:'JS1 (B2)',seats:15},
+    {id:3092,days:'Monday / Wednesday',dayNums:[1,3],startH:20,startM:30,endH:22,endM:0,teacher:'Jonelle Williams',course:'JS1 (B2)',seats:15},
+    {id:3096,days:'Tuesday / Thursday',dayNums:[2,4],startH:18,startM:30,endH:20,endM:0,teacher:'Angela Gradiska',course:'JS1 (B2)',seats:15},
+    {id:3100,days:'Tuesday / Thursday',dayNums:[2,4],startH:20,startM:30,endH:22,endM:0,teacher:'Angela Gradiska',course:'JS1 (B2)',seats:15}
+  ],
+  'C1': [
+    {id:3091,days:'Monday / Wednesday',dayNums:[1,3],startH:18,startM:30,endH:20,endM:0,teacher:'Angela Gradiska',course:'Job Skills 2 (C1)',seats:15},
+    {id:3093,days:'Monday / Wednesday',dayNums:[1,3],startH:20,startM:30,endH:22,endM:0,teacher:'Angela Gradiska',course:'Job Skills 2 (C1)',seats:15}
+  ],
+  'Conv': [
+    {id:3094,days:'Tuesday / Thursday',dayNums:[2,4],startH:9,startM:0,endH:10,endM:30,teacher:'Laura Ebel',course:'Conversation Classes',seats:15}
+  ]
+};
+var LEVEL_INFO = {
+  'A1':{name:'A1 — Beginner',desc:'Practical Skills 1',title:'Available Classes for A1'},
+  'A2':{name:'A2 — Elementary',desc:'Practical Skills 2',title:'Available Classes for A2'},
+  'B1':{name:'B1 — Intermediate',desc:'Practical Skills 3',title:'Available Classes for B1'},
+  'B2':{name:'B2 — Upper Intermediate',desc:'Job Skills 1',title:'Available Classes for B2'},
+  'C1':{name:'C1 — Advanced',desc:'Job Skills 2',title:'Available Classes for C1'},
+  'Conv':{name:'Conversation',desc:'Conversation Classes',title:'Available Conversation Classes'}
+};
+var DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var userTz = Intl.DateTimeFormat().resolvedOptions().timeZone || NY_TZ;
+var isNY = (userTz === NY_TZ || userTz === 'US/Eastern');
+function convertNYtoLocal(hour, minute, refDayNum) {
+  var baseDate = new Date(2026, 2, 23);
+  var dayOffset = refDayNum - 1;
+  var refDate = new Date(2026, 2, 23 + dayOffset, hour, minute, 0);
+  var nyFmt = {timeZone: NY_TZ, hour:'numeric', minute:'2-digit', hour12:true};
+  var localFmt = {timeZone: userTz, hour:'numeric', minute:'2-digit', hour12:true};
+  var localDayFmt = {timeZone: userTz, weekday:'long'};
+  var localTimeStr = refDate.toLocaleString('en-US', localFmt);
+  var localDayStr = refDate.toLocaleString('en-US', localDayFmt);
+  var nyDay = refDate.toLocaleString('en-US', {timeZone: NY_TZ, day:'numeric'});
+  var localDay = refDate.toLocaleString('en-US', {timeZone: userTz, day:'numeric'});
+  var dayDiff = parseInt(localDay) - parseInt(nyDay);
+  return { localTime: localTimeStr, localDay: localDayStr, dayDiff: dayDiff };
+}
+function formatClassTimes(cls) {
+  var refDay = cls.dayNums[0];
+  var start = convertNYtoLocal(cls.startH, cls.startM, refDay);
+  var end = convertNYtoLocal(cls.endH, cls.endM, refDay);
+  var localDays = cls.dayNums.map(function(dn) { return convertNYtoLocal(cls.startH, cls.startM, dn).localDay; });
+  var nyTimeStr = formatTime12(cls.startH, cls.startM) + ' – ' + formatTime12(cls.endH, cls.endM);
+  return { nyTime: nyTimeStr, localStart: start.localTime, localEnd: end.localTime, localDays: localDays.join(' / '), dayDiff: start.dayDiff, isDifferentDay: start.dayDiff !== 0 };
+}
+function formatTime12(h, m) { var ampm = h >= 12 ? 'PM' : 'AM'; var h12 = h % 12 || 12; return h12 + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm; }
+function getFriendlyTzName(tz) { try { var city = tz.split('/').pop().replace(/_/g, ' '); var now = new Date(); var parts = now.toLocaleString('en-US', {timeZone: tz, timeZoneName: 'longOffset'}); var match = parts.match(/GMT[^\s)]+/); var offset = match ? match[0] : ''; return city + (offset ? ' (' + offset + ')' : ''); } catch(e) { return tz; } }
+var COMMON_TZ = ['Africa/Algiers','Africa/Cairo','Africa/Casablanca','Africa/Dakar','Africa/Lagos','Africa/Nairobi','Africa/Tunis','America/Bogota','America/Buenos_Aires','America/Chicago','America/Denver','America/Lima','America/Los_Angeles','America/Mexico_City','America/New_York','America/Sao_Paulo','America/Toronto','Asia/Amman','Asia/Baghdad','Asia/Beirut','Asia/Dubai','Asia/Istanbul','Asia/Jerusalem','Asia/Karachi','Asia/Kolkata','Asia/Manila','Asia/Riyadh','Asia/Seoul','Asia/Shanghai','Asia/Singapore','Asia/Tokyo','Australia/Melbourne','Australia/Sydney','Europe/Berlin','Europe/London','Europe/Madrid','Europe/Moscow','Europe/Paris','Europe/Rome','Pacific/Auckland'];
+window.openTzPicker = function() { document.getElementById('tz-modal').classList.add('visible'); document.getElementById('tz-search').value = ''; renderTzList(''); document.getElementById('tz-search').focus(); };
+window.filterTimezones = function() { renderTzList(document.getElementById('tz-search').value.toLowerCase()); };
+function renderTzList(filter) { var list = document.getElementById('tz-list'); list.innerHTML = ''; COMMON_TZ.forEach(function(tz) { var city = tz.split('/').pop().replace(/_/g, ' '); var region = tz.split('/')[0].replace(/_/g, ' '); if (filter && (city + ' ' + region + ' ' + tz).toLowerCase().indexOf(filter) === -1) return; var div = document.createElement('div'); div.className = 'tz-option'; div.innerHTML = '<strong>' + city + '</strong> <span class="tz-offset">' + region + '</span>'; div.onclick = function() { userTz = tz; isNY = (tz === NY_TZ || tz === 'US/Eastern'); document.getElementById('tz-modal').classList.remove('visible'); document.getElementById('tz-display').textContent = getFriendlyTzName(userTz); renderClasses(); }; list.appendChild(div); }); }
+document.getElementById('tz-modal').onclick = function(e) { if (e.target === this) this.classList.remove('visible'); };
+var selectedClass = null, studentLevel = null, studentName = '', studentEmail = '', studentPhone = '';
+function init() {
+  var p = new URLSearchParams(window.location.search);
+  studentLevel = (p.get('level') || 'A1').toUpperCase();
+  studentName = p.get('name') || '';
+  studentEmail = p.get('email') || '';
+  studentPhone = p.get('phone') || '';
+  if (!LEVEL_INFO[studentLevel]) studentLevel = 'A1';
+  var info = LEVEL_INFO[studentLevel];
+  document.getElementById('level-cefr').textContent = studentLevel;
+  document.getElementById('level-name').textContent = info.name;
+  document.getElementById('level-desc').textContent = info.desc;
+  document.getElementById('classes-title').textContent = info.title;
+  document.getElementById('full-level').textContent = studentLevel;
+  if (studentName) document.getElementById('full-name').value = studentName;
+  document.getElementById('premium-link').href = PREMIUM_LINK;
+  document.getElementById('tz-display').textContent = getFriendlyTzName(userTz);
+  renderClasses();
+}
+function renderClasses() {
+  var classes = CLASSES[studentLevel] || [];
+  var container = document.getElementById('class-list');
+  container.innerHTML = '';
+  var available = classes.filter(function(c) { return c.seats > 0; });
+  if (available.length === 0) { document.getElementById('class-selection').style.display = 'none'; document.getElementById('full-section').style.display = 'block'; return; }
+  document.getElementById('class-selection').style.display = 'block'; document.getElementById('full-section').style.display = 'none';
+  classes.forEach(function(cls) {
+    var isFull = cls.seats <= 0, isLow = cls.seats > 0 && cls.seats <= 5;
+    var card = document.createElement('div');
+    card.className = 'class-card' + (isFull ? ' full' : '') + (selectedClass === cls.id ? ' selected' : '');
+    card.setAttribute('data-id', cls.id);
+    var seatClass = isFull ? 'seats-full' : (isLow ? 'seats-low' : 'seats-available');
+    var seatText = isFull ? 'FULL' : cls.seats + ' seats';
+    var t = formatClassTimes(cls);
+    var timeHTML = '';
+    if (isNY) { timeHTML = '<div class="time-same">' + t.nyTime + ' (New York)</div>'; }
+    else { timeHTML = '<div class="time-local">🕐 ' + t.localStart + ' – ' + t.localEnd + ' your time'; if (t.isDifferentDay) timeHTML += '<span class="day-diff">+1 day</span>'; timeHTML += '</div><div class="time-ny">' + t.nyTime + ' New York</div>'; }
+    var daysHTML = '<div class="days">' + cls.days + '</div>';
+    if (!isNY && t.isDifferentDay) { daysHTML += '<div class="local-days-note">In your timezone: <strong>' + t.localDays + '</strong></div>'; }
+    card.innerHTML = '<div class="check-mark">✓</div><div class="seats ' + seatClass + '">' + seatText + '</div>' + daysHTML + '<div class="time-row">' + timeHTML + '</div><div class="teacher">Teacher: ' + cls.teacher + '</div><div class="course-name">WPS #' + cls.id + ' · ' + cls.course + '</div>';
+    if (!isFull) card.onclick = function() { selectClass(cls.id); };
+    container.appendChild(card);
+  });
+}
+function selectClass(id) {
+  selectedClass = id;
+  document.querySelectorAll('.class-card').forEach(function(c) { c.classList.toggle('selected', c.getAttribute('data-id') == id); });
+  document.getElementById('commit-section').classList.add('visible');
+  setTimeout(function() { document.getElementById('commit-section').scrollIntoView({behavior:'smooth',block:'start'}); }, 100);
+  checkReady();
+}
+window.checkReady = function() {
+  var ok = document.getElementById('agree-check').checked && document.getElementById('full-name').value.trim().length >= 2 && selectedClass;
+  document.getElementById('submit-btn').classList.toggle('active', !!ok);
+};
+window.submitEnrollment = function() {
+  var name = document.getElementById('full-name').value.trim();
+  if (!document.getElementById('agree-check').checked || name.length < 2 || !selectedClass) return;
+  var classes = CLASSES[studentLevel] || [];
+  var cls = classes.find(function(c) { return c.id === selectedClass; });
+  if (!cls) return;
+  var url = JOTFORM_LINKS[studentLevel];
+  if (url) { var t = formatClassTimes(cls); var sep = url.indexOf('?') > -1 ? '&' : '?'; var nameParts = name.split(' '); var firstName = nameParts[0] || ''; var lastName = nameParts.slice(1).join(' ') || ''; var q = 'studentName[first]=' + encodeURIComponent(firstName) + '&studentName[last]=' + encodeURIComponent(lastName) + '&studentEmail=' + encodeURIComponent(studentEmail) + '&phoneNumber10=' + encodeURIComponent(studentPhone) + '&level=' + encodeURIComponent(studentLevel) + '&classId=' + encodeURIComponent(cls.id) + '&className=' + encodeURIComponent(cls.days + ' ' + t.nyTime + ' - ' + cls.teacher) + '&timezone=' + encodeURIComponent(userTz) + '&localTime=' + encodeURIComponent(t.localStart + ' - ' + t.localEnd); window.location.href = url + sep + q; return; }
+  showSuccess(cls, name);
+};
+function showSuccess(cls, name) {
+  document.getElementById('class-selection').style.display = 'none'; document.getElementById('commit-section').style.display = 'none'; document.getElementById('success-section').classList.add('visible');
+  var t = formatClassTimes(cls);
+  document.getElementById('success-details').innerHTML = '<strong>' + name + '</strong>, you are enrolled in:<br><br><strong>' + cls.course + '</strong><br>' + cls.days + ' · ' + t.nyTime + '<br>Teacher: ' + cls.teacher + '<br>WPS #' + cls.id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+window.stayOnWaitlist = function() { document.getElementById('full-section').style.display = 'none'; document.getElementById('waitlist-confirmed').style.display = 'block'; window.scrollTo({top:0,behavior:'smooth'}); };
+init();
+})();
+</script>
+</body>
+</html>
