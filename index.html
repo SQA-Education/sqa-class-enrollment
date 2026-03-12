@@ -672,8 +672,20 @@ async function oCall(studentText){
     var data=await res.json();hideTyping();
     var rt=data.content.map(function(c){return c.text||''}).join('');
     rt=rt.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
-    var parsed;try{var m=rt.match(/\{[\s\S]*\}/);parsed=JSON.parse(m?m[0]:rt)}catch(e){parsed={assessment:false,message:rt.replace(/[{}"]/g,' ').replace(/\n/g,' ').trim(),currentLevel:'?',currentQuestion:oQCount}}
-    if(parsed.assessment){oFinish(parsed)}
+    var parsed;
+try{
+  var m=rt.match(/\{[\s\S]*\}/);
+  parsed=JSON.parse(m?m[0]:rt)
+}catch(e){
+  parsed={
+    assessment:false,
+    message:rt.replace(/[{}"]/g,' ').replace(/\n/g,' ').trim(),
+    currentLevel:'?',
+    currentQuestion:oQCount
+  }
+}
+
+if(parsed.assessment){oFinish(parsed)}
     else if(forceEnd){if(parsed.message){addBubble('interviewer',parsed.message);speakText(parsed.message)}var fb={cefr:parsed.currentLevel||'A2',label:(parsed.currentLevel||'A2')+' — Estimated',description:'Based on our conversation.',strengths:'Good effort throughout.',improvements:'Continue practicing speaking.',recommendation:QDATA.placements[parsed.currentLevel||'A2']||'SQA Level 2 (A2)'};setTimeout(function(){oFinish(fb)},1500)}
     else{oHistory.push({role:'assistant',content:parsed.message});oTranscript.push({role:'interviewer',text:parsed.message,time:timeNow()});addBubble('interviewer',parsed.message);speakText(parsed.message);oQCount=parsed.currentQuestion||oQCount;S('#o-level').textContent='Level: '+(parsed.currentLevel||'...')+' · Q'+oQCount+'/'+MAX_ORAL_Q;S('#o-fill').style.width=(oQCount/MAX_ORAL_Q*100)+'%';S('#o-counter').textContent='Question '+oQCount+' of '+MAX_ORAL_Q}
   }catch(e){hideTyping();addBubble('system','The interview server did not respond. Check your internet connection and try again, or type your answer below.'); setBrowserWarning('If this keeps happening, the issue is likely the interview connection, not the microphone.', 'warning'); console.error(e)}
